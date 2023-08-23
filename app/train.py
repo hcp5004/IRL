@@ -7,8 +7,8 @@ from app import *
 
 n_states = 400 # position - 20, velocity - 20
 n_actions = 3
-one_feature = 20 # number of state per one feature
-feature_num = 4
+one_feature = 20 # number of state per one feature of observation
+feature_num = 4 # theta is vector of R^4
 q_table = np.zeros((n_states, n_actions))  # (400, 3)
 
 gamma = 0.99
@@ -17,7 +17,7 @@ q_learning_rate = 0.03
 '''
 This code simply represents continuous states (position x velocity x action) with 20x20x3 grid.
 
-For Reward function, R = theta^T phi(s), it is Gaussian radial basis function which 
+For Reward function, R = theta^T phi(s), it is Gaussian radial basis function which has 1 as derivation
 
 For RL step, it used Q learning.
 '''
@@ -35,6 +35,9 @@ def update_q_table(state, action, reward, next_state):
     q_2 = reward + gamma * max(q_table[next_state])
     q_table[state][action] += q_learning_rate * (q_2 - q_1)
 
+'''
+Feature expectation is computed by MonteCarlo
+'''
 
 def main():
     env = gym.make('MountainCar-v0')

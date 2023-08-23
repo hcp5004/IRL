@@ -41,7 +41,7 @@ def calc_feature_expectation(feature_num, gamma, q_table, demonstrations, env):
             demo_length += 1
 
             state_idx = idx_state(env, state)
-            action = np.argmax(q_table[state_idx])
+            action = np.argmax(q_table[state_idx]) # the policy is greedy over q value. (q learning)
             next_state, reward, done, _ = env.step(action)
             
             features = feature_estimate.get_features(next_state)
@@ -67,6 +67,13 @@ def expert_feature_expectation(feature_num, gamma, demonstrations, env):
     
     return feature_expectations
 
+'''
+SVM problem: 
+it is labeling expert feature expectation as 1, theta^T * mu_E + b = 1
+And Learner's feature expectations as -1, theta^T * mu_i + b <= -1
+Then the constraints are theta^T * mu_i - theta^T * mu_E <= -2
+Since we labeled 1 and -1, the margin t is 2/norm(theta)
+'''
 
 def QP_optimizer(feature_num, learner, expert):
     w = cp.Variable(feature_num)
