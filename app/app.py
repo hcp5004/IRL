@@ -79,7 +79,7 @@ def QP_optimizer(feature_num, learner, expert):
     w = cp.Variable(feature_num)
     
     obj_func = cp.Minimize(cp.norm(w))
-    constraints = [(expert-learner) * w >= 2] 
+    constraints = [(expert-learner) @ w >= 2] 
 
     prob = cp.Problem(obj_func, constraints)
     prob.solve()
@@ -92,7 +92,7 @@ def QP_optimizer(feature_num, learner, expert):
         return weights, prob.status
     else:
         print("status:", prob.status)
-        
+            
         weights = np.zeros(feature_num)
         return weights, prob.status
 
@@ -106,3 +106,31 @@ def subtract_feature_expectation(learner):
     # if status is infeasible, subtract first feature expectation
     learner = learner[1:][:]
     return learner
+
+'''
+In paper, author said the designer manually picks best one over i = 1, ..., n with accpetable performance 
+or alternatively we can find the closest point by solving QP.
+
+Then the new policy get to be mixing policy where the probability of picking policy_i is given by lambda_i.
+'''
+
+def QP_policy(learner, expert):
+    lamdba = cp.Variable(learner.shape[0])
+    
+    obj_func = cp.Minimize(cp.norm(expert - learner.T @ lamdba))
+    constraints = [lamdba >= 0, np.ones(learner.shape).T @ lamdba == 1] 
+
+    prob = cp.Problem(obj_func, constraints)
+    prob.solve()
+
+    if prob.status == "optimal":
+        print("status:", prob.status)
+        print("optimal value", prob.value)
+    
+        weights = np.squeeze(np.asarray(lamdba.value))
+        return weights, prob.status
+    else:
+        print("status:", prob.status)
+        
+        weights = np.zeros(learner.shape[0])
+        return weights, prob.status
