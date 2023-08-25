@@ -3,6 +3,7 @@ import gym
 import random
 import sys
 import cvxpy as cp
+from utils import save_frames_as_gif
 
 N_idx = 20
 F_idx = 4
@@ -28,8 +29,10 @@ if __name__ == '__main__':
 
     # Create a new game instance.
     env = gym.make('MountainCar-v0')
-    n_episode = 10 # test the agent 10times
+    n_episode = 1 # test the agent 10times
     scores = []
+
+    images = []
 
     for ep in range(n_episode):
         state = env.reset()
@@ -37,7 +40,8 @@ if __name__ == '__main__':
 
         while True:
             # Render the play
-            env.render()
+            image = env.render(mode='rgb_array')
+            images.append(image)
 
             state_idx = idx_to_state(env, state)
 
@@ -53,6 +57,7 @@ if __name__ == '__main__':
                 print('{} episode | score: {:.1f}'.format(ep + 1, score))
                 
                 break
-
+    
+    save_frames_as_gif(images, filename='irl_results.gif')
     env.close()
     sys.exit()

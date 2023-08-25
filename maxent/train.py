@@ -16,6 +16,10 @@ theta_learning_rate = 0.05
 
 np.random.seed(1)
 
+'''
+In this code, 
+'''
+
 def idx_demo(env, one_feature):
     env_low = env.observation_space.low     
     env_high = env.observation_space.high   
